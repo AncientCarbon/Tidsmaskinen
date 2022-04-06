@@ -2,16 +2,13 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class SQLManipulation {
-    public void createConnection(String password){
+    public void createConnection(String username, String password){
         Scanner in = new Scanner(System.in, "CP850");
 
         String host = "localhost";
         String port = "3306";
         String database = "tidsmaskinen_db";
         String cp = "utf8";
-
-        //set username
-        String username = "root";
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?characterEncoding=" + cp;
 

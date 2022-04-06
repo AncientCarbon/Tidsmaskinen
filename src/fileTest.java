@@ -7,16 +7,25 @@ public class fileTest {
 
     public static void main(String[] args) throws IOException {
         Scanner in = new Scanner(System.in);
-        System.out.println("Username: root\nPassword: ");
+
+        System.out.print("Username: ");
+        String username = in.nextLine();
+        System.out.println();
+
+        System.out.print("Password: ");
         String password = in.nextLine();
+        System.out.println();
 
         IndlaesPersonerOgTilmeldinger indlaes = new IndlaesPersonerOgTilmeldinger();
+        System.out.print("File path: ");
+        String filePath = in.nextLine();
 
-        List<PersonOgTilmelding> printThis = indlaes.indlaesPersonerOgTilmeldinger("C:\\Users\\Boblo\\OneDrive\\Pictures\\tilmeldinger.csv");
+        List<PersonOgTilmelding> personOgTilmeldingList = indlaes.indlaesPersonerOgTilmeldinger(filePath);
 
-        for (int i = 0; i < printThis.size(); i++) {
-            System.out.println(printThis.get(i).getPerson());
+        SQLManipulation sqlManipulation = new SQLManipulation();
+        sqlManipulation.createConnection(username, password);
 
-        }
+
+
     }
 }
