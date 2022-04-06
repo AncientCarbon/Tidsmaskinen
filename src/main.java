@@ -3,6 +3,8 @@ import java.util.Scanner;
 
 public class main {
     public static void main(String[] args) {
+        Scanner in = new Scanner(System.in, "CP850");
+
         String host = "localhost";
         String port = "3306";
         String database = "tidsmaskinen_db";
@@ -10,12 +12,12 @@ public class main {
 
         //set username
         String username = "root";
-        String password = "passwordLmao";
+        System.out.print("password: ");
+        String password = in.nextLine();
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?characterEncoding=" + cp;
 
         try{
-            Scanner in = new Scanner(System.in, "CP850");
             System.out.println("Type sql manipulation: ");
             String sqlManipulation = in.nextLine();
             in.close();
