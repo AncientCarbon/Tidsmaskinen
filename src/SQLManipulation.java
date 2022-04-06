@@ -1,8 +1,8 @@
 import java.sql.*;
 import java.util.Scanner;
 
-public class main {
-    public static void main(String[] args) {
+public class SQLManipulation {
+    public void createConnection(String password){
         Scanner in = new Scanner(System.in, "CP850");
 
         String host = "localhost";
@@ -12,11 +12,14 @@ public class main {
 
         //set username
         String username = "root";
-        System.out.print("password: ");
-        String password = in.nextLine();
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?characterEncoding=" + cp;
 
+        tryManipulation(url, username, password);
+    }
+
+    public void tryManipulation(String url, String username, String password){
+        Scanner in = new Scanner(System.in);
         try{
             System.out.println("Type sql manipulation: ");
             String sqlManipulation = in.nextLine();
