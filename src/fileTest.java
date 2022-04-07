@@ -78,9 +78,6 @@ public class fileTest {
                     String person = personOgTilmeldingList.get(i).getPerson().toString();
                     String[] personArray = person.split(";");
 
-                    String tilmelding = personOgTilmeldingList.get(i).getTilmelding().toString();
-                    String[] tilmeldingArray = tilmelding.split(";");
-
                     try {
 
                         String sqlManipulation = "INSERT person VALUES('" + personArray[0] + "', '" + personArray[1] + "', '" +
