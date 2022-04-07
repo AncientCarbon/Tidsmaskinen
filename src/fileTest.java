@@ -82,27 +82,41 @@ public class fileTest {
                         String[] tilmeldingArray = tilmelding.split(";");
 
                         try {
-                            String sqlManipulation = "INSERT eventsTable VALUES('" + tilmeldingArray[2] + "', '" +
-                                    tilmeldingArray[0] + "', '" + tilmeldingArray[1] + "')";
+                            // 0 = KLUBID, 1 = EVENTTYPE, 2 = DATO
+                            String sqlManipulation = "INSERT IGNORE eventsTable VALUES('" + tilmeldingArray[2] + "', '" +
+                                    tilmeldingArray[1] + "', '" + tilmeldingArray[0] + "')";
 
                             Connection connection = DriverManager.getConnection(url, username, password);
 
                             Statement statement = connection.createStatement();
                             statement.executeUpdate(sqlManipulation);
-                            AgeCalculator ageCalculator = new AgeCalculator();
-                            sqlManipulation = "INSERT results VALUES('" + tilmeldingArray[2] + "', '" +
-                                    tilmeldingArray[0] + "', '" + tilmeldingArray[1] + "', '" + personArray[1] +
-                                    "', " + null + ", " + ageCalculator.getAge(Integer.parseInt(personArray[4])) +
-                                    ", '" + personArray[3];
-                            statement.executeUpdate(sqlManipulation);
+
                             connection.close();
 
                         } catch (SQLException e){
+                            e.printStackTrace();
                             duplicate++;
                         } catch (Exception e){
                             e.printStackTrace();
                         }
+                        try {
+
+                            AgeCalculator ageCalculator = new AgeCalculator();
+                            Connection connection = DriverManager.getConnection(url, username, password);
+
+                            String sqlManipulation = "INSERT resultat VALUES(NULL, '" + personArray[0] + "', '" + tilmeldingArray[2] + "', '" +
+                                    tilmeldingArray[1] + "', '" + tilmeldingArray[0] + "', '" + personArray[1] +
+                                    "', NULL, " + ageCalculator.getAge(Integer.parseInt(personArray[4]), Integer.parseInt(tilmeldingArray[2])) +
+                                    ", '" + personArray[3] + "')";
+                            Statement statement = connection.createStatement();
+                            statement.executeUpdate(sqlManipulation);
+                            connection.close();
+
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
+
                     try {
 
                         String sqlManipulation = "INSERT person VALUES('" + personArray[0] + "', '" + personArray[1] + "', '" +
