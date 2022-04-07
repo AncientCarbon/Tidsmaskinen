@@ -76,12 +76,15 @@ public class fileTest {
                 boolean finished = true;
                 for (int i = 0; i < personOgTilmeldingList.size(); i++) {
                     String person = personOgTilmeldingList.get(i).getPerson().toString();
-                    String[] tempArr = person.split(";");
+                    String[] personArray = person.split(";");
+
+                    String tilmelding = personOgTilmeldingList.get(i).getTilmelding().toString();
+                    String[] tilmeldingArray = tilmelding.split(";");
 
                     try {
 
-                        String sqlManipulation = "INSERT person VALUES('" + tempArr[0] + "', '" + tempArr[1] + "', '" +
-                                tempArr[2] + "', '" + tempArr[3] + "', " + Integer.parseInt(tempArr[4]) + ")";
+                        String sqlManipulation = "INSERT person VALUES('" + personArray[0] + "', '" + personArray[1] + "', '" +
+                                personArray[2] + "', '" + personArray[3] + "', " + Integer.parseInt(personArray[4]) + ")";
 
                         Connection connection = DriverManager.getConnection(url, username, password);
 
