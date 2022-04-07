@@ -1,31 +1,117 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLInvalidAuthorizationSpecException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class fileTest {
-
     public static void main(String[] args) throws IOException {
         Scanner in = new Scanner(System.in);
 
         System.out.print("Username: ");
         String username = in.nextLine();
-        System.out.println();
 
         System.out.print("Password: ");
         String password = in.nextLine();
         System.out.println();
 
-        IndlaesPersonerOgTilmeldinger indlaes = new IndlaesPersonerOgTilmeldinger();
-        System.out.print("File path: ");
-        String filePath = in.nextLine();
-
-        List<PersonOgTilmelding> personOgTilmeldingList = indlaes.indlaesPersonerOgTilmeldinger(filePath);
-
-        SQLManipulation sqlManipulation = new SQLManipulation();
-        sqlManipulation.createConnection(username, password);
+        System.out.println("Type '0' to exit program, '1' to type SQL command, or '2' to load file: ");
+        int choice = in.nextInt();
+        in.nextLine();
 
 
 
+
+        String host = "localhost";
+        String port = "3306";
+        String database = "tidsmaskinen_db";
+        String cp = "utf8";
+
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?characterEncoding=" + cp;
+
+
+        while(true){
+            if (choice == 0) System.exit(0);
+            else if (choice == 1) {
+                try {
+                    System.out.println("Type SQL manipulation: ");
+                    String sqlManip = in.nextLine();
+                    Connection connection = DriverManager.getConnection(url, username, password);
+
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate(sqlManip);
+                    System.out.println("Success");
+                } catch (SQLInvalidAuthorizationSpecException e){
+                    System.out.print("Username or Password is wrong. Please retry.\nUsername: ");
+                    username = in.nextLine();
+
+                    System.out.print("Password: ");
+                    password = in.nextLine();
+                    System.out.println();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (choice == 2) {
+                IndlaesPersonerOgTilmeldinger indlaes = new IndlaesPersonerOgTilmeldinger();
+                System.out.print("File path: ");
+                String filePath = in.nextLine(); //"C:\Users\Boblo\OneDrive\Pictures\tilmeldinger.csv";
+                List<PersonOgTilmelding> personOgTilmeldingList;
+
+                while (true){
+                    try {
+                        personOgTilmeldingList = indlaes.indlaesPersonerOgTilmeldinger(filePath);
+                        break;
+                    } catch (FileNotFoundException e){
+                        System.out.print("File path not working. Please try again.\nFile path: ");
+                        filePath = in.nextLine();
+                    }
+                }
+
+                boolean finished = true;
+                for (int i = 0; i < personOgTilmeldingList.size(); i++) {
+                    String person = personOgTilmeldingList.get(i).getPerson().toString();
+                    String[] tempArr = person.split(";");
+
+                    try {
+
+                        String sqlManipulation = "INSERT person VALUES('" + tempArr[0] + "', '" + tempArr[1] + "', '" +
+                                tempArr[2] + "', '" + tempArr[3] + "', " + Integer.parseInt(tempArr[4]) + ")";
+
+                        Connection connection = DriverManager.getConnection(url, username, password);
+
+                        Statement statement = connection.createStatement();
+                        statement.executeUpdate(sqlManipulation);
+
+                        connection.close();
+                    } catch (SQLInvalidAuthorizationSpecException e) {
+                        System.out.print("Username or Password is wrong. Please retry.\nUsername: ");
+                        username = in.nextLine();
+
+                        System.out.print("Password: ");
+                        password = in.nextLine();
+                        System.out.println();
+                        i--;
+
+                    } catch (Exception e) {
+                        finished = false;
+                        e.printStackTrace();
+                    }
+                }
+                if (finished) System.out.println("Success");
+                else System.out.println("Failure");
+            }
+            else {
+                System.out.println("Typed number not an option. Try again.");
+            }
+            System.out.println("Type '0' to exit program, '1' to type SQL command, or '2' to load file: ");
+            choice = in.nextInt();
+            in.nextLine();
+        }
     }
 }
