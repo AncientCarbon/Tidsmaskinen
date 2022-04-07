@@ -1,9 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLInvalidAuthorizationSpecException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.Scanner;
 
@@ -74,14 +71,42 @@ public class fileTest {
                 }
 
                 boolean finished = true;
+                int duplicate = 0;
                 for (int i = 0; i < personOgTilmeldingList.size(); i++) {
                     String person = personOgTilmeldingList.get(i).getPerson().toString();
                     String[] personArray = person.split(";");
 
+
+                    if (personOgTilmeldingList.get(i).getTilmelding() != null){
+                        String tilmelding = personOgTilmeldingList.get(i).getTilmelding().toString();
+                        String[] tilmeldingArray = tilmelding.split(";");
+
+                        try {
+                            String sqlManipulation = "INSERT eventsTable VALUES('" + tilmeldingArray[2] + "', '" +
+                                    tilmeldingArray[0] + "', '" + tilmeldingArray[1] + "')";
+
+                            Connection connection = DriverManager.getConnection(url, username, password);
+
+                            Statement statement = connection.createStatement();
+                            statement.executeUpdate(sqlManipulation);
+                            AgeCalculator ageCalculator = new AgeCalculator();
+                            sqlManipulation = "INSERT results VALUES('" + tilmeldingArray[2] + "', '" +
+                                    tilmeldingArray[0] + "', '" + tilmeldingArray[1] + "', '" + personArray[1] +
+                                    "', " + null + ", " + ageCalculator.getAge(Integer.parseInt(personArray[4])) +
+                                    ", '" + personArray[3];
+                            statement.executeUpdate(sqlManipulation);
+                            connection.close();
+
+                        } catch (SQLException e){
+                            duplicate++;
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
                     try {
 
                         String sqlManipulation = "INSERT person VALUES('" + personArray[0] + "', '" + personArray[1] + "', '" +
-                                personArray[2] + "', '" + personArray[3] + "', " + Integer.parseInt(personArray[4]) + ")";
+                                personArray[2] + "', '" + personArray[3] + "', '" + Integer.parseInt(personArray[4]) + "')";
 
                         Connection connection = DriverManager.getConnection(url, username, password);
 
@@ -104,6 +129,7 @@ public class fileTest {
                     }
                 }
                 if (finished) System.out.println("Success");
+                if (duplicate != 0) System.out.println(duplicate + " duplicates.");
                 else System.out.println("Failure");
             }
             else {
