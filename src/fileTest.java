@@ -69,54 +69,10 @@ public class fileTest {
                         filePath = in.nextLine();
                     }
                 }
-
-                boolean finished = true;
-                int duplicate = 0;
+                int startnummer = 0;
                 for (int i = 0; i < personOgTilmeldingList.size(); i++) {
                     String person = personOgTilmeldingList.get(i).getPerson().toString();
                     String[] personArray = person.split(";");
-
-
-                    if (personOgTilmeldingList.get(i).getTilmelding() != null){
-                        String tilmelding = personOgTilmeldingList.get(i).getTilmelding().toString();
-                        String[] tilmeldingArray = tilmelding.split(";");
-
-                        try {
-                            // 0 = KLUBID, 1 = EVENTTYPE, 2 = DATO
-                            String sqlManipulation = "INSERT IGNORE eventsTable VALUES('" + tilmeldingArray[2] + "', '" +
-                                    tilmeldingArray[1] + "', '" + tilmeldingArray[0] + "')";
-
-                            Connection connection = DriverManager.getConnection(url, username, password);
-
-                            Statement statement = connection.createStatement();
-                            statement.executeUpdate(sqlManipulation);
-
-                            connection.close();
-
-                        } catch (SQLException e){
-                            e.printStackTrace();
-                            duplicate++;
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
-                        try {
-
-                            AgeCalculator ageCalculator = new AgeCalculator();
-                            Connection connection = DriverManager.getConnection(url, username, password);
-
-                            String sqlManipulation = "INSERT resultat VALUES(NULL, '" + personArray[0] + "', '" + tilmeldingArray[2] + "', '" +
-                                    tilmeldingArray[1] + "', '" + tilmeldingArray[0] + "', '" + personArray[1] +
-                                    "', NULL, " + ageCalculator.getAge(Integer.parseInt(personArray[4]), Integer.parseInt(tilmeldingArray[2])) +
-                                    ", '" + personArray[3] + "')";
-                            Statement statement = connection.createStatement();
-                            statement.executeUpdate(sqlManipulation);
-                            connection.close();
-
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-
                     try {
 
                         String sqlManipulation = "INSERT person VALUES('" + personArray[0] + "', '" + personArray[1] + "', '" +
@@ -138,13 +94,54 @@ public class fileTest {
                         i--;
 
                     } catch (Exception e) {
-                        finished = false;
                         e.printStackTrace();
                     }
+
+                    if (personOgTilmeldingList.get(i).getTilmelding() != null){
+                        String tilmelding = personOgTilmeldingList.get(i).getTilmelding().toString();
+                        String[] tilmeldingArray = tilmelding.split(";");
+                        try {
+                            String sqlManipulation = "INSERT IGNORE eventType VALUES('" + tilmeldingArray[1] + "', NULL)";
+
+                            Connection connection = DriverManager.getConnection(url, username, password);
+
+                            Statement statement = connection.createStatement();
+                            statement.executeUpdate(sqlManipulation);
+                            connection.close();
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        try {
+                            // 0 = KLUBID, 1 = EVENTTYPE, 2 = DATO
+                            String sqlManipulation = "INSERT IGNORE eventsTable VALUES('" + tilmeldingArray[2] + "', '" +
+                                    tilmeldingArray[1] + "', '" + tilmeldingArray[0] + "')";
+
+                            Connection connection = DriverManager.getConnection(url, username, password);
+
+                            Statement statement = connection.createStatement();
+                            statement.executeUpdate(sqlManipulation);
+
+                            connection.close();
+
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        try {
+                            startnummer++;
+                            Connection connection = DriverManager.getConnection(url, username, password);
+
+                            String sqlManipulation = "INSERT resultat VALUES(" + startnummer + ", '" + personArray[0] +
+                                    "', '" + tilmeldingArray[2] + "', '" + tilmeldingArray[1] + "', '" +
+                                    tilmeldingArray[0] + "', " + 0 + ")";
+                            Statement statement = connection.createStatement();
+                            statement.executeUpdate(sqlManipulation);
+                            connection.close();
+
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                if (finished) System.out.println("Success");
-                if (duplicate != 0) System.out.println(duplicate + " duplicates.");
-                else System.out.println("Failure");
             }
             else {
                 System.out.println("Typed number not an option. Try again.");
